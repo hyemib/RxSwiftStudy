@@ -27,11 +27,14 @@ import RxSwift
 /*:
  # Infallible
  */
+// Infallible은 새로운 형태의 observable이다. observable이기 때문에 이벤트 방출.
+// Error 이벤트를 제외한 Next 이벤트와 Completed 이벤트만 방출
 
 enum MyError: Error {
     case unknown
 }
 
+// observable
 let observable = Observable<String>.create { observer in
     observer.onNext("Hello")
     observer.onNext("Observable")
@@ -44,6 +47,15 @@ let observable = Observable<String>.create { observer in
 }
 
 
+// infallible
+let infallible = Infallible<String>.create { observer in
+    
+    observer(.next("Hello"))
+    
+    observer(.completed)
+    
+    return Disposables.create()
+}
 
 
 

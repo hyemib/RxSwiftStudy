@@ -28,14 +28,23 @@ import RxSwift
 /*:
  # Operators
  */
+// 대부분의 연산자는 Observable 상에서 동작하고 새로운 Observable을 return한다.
+// Observable을 return하기 때문에 두개 이상의 연산자를 연달아 호출할 수 있다.
+// 호출 순서에 따라 다른 결과가 나오기 때문에 주의해야 함
 
 let bag = DisposeBag()
 
 Observable.from([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    .take(5) // take 연산자는 처음 해당 개수만 전달
+    .filter { $0.isMultiple(of: 2) } // 짝수만 필터
     .subscribe { print($0) }
     .disposed(by: bag)
 
-
+/*
+ next(2)
+ next(4)
+ completed
+ */
 
 
 

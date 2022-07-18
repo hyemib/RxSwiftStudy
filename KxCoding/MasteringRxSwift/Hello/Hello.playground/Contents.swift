@@ -25,19 +25,31 @@ import UIKit
 import RxSwift
 
 
-let disposeBag = DisposeBag()
+// # Swift
 /*
-Observable.just("Hello, RxSwift")
-    .subscribe{ print($0) }
-    .disposed(by: disposeBag)
+var a = 1
+var b = 2
+
+a + b
+
+a = 12
 */
+
+// a의 값을 변경해도 이전의 a+b의 값은 변경되지 않는다.
+// 명령형 프로그래밍에서는 a와 b의 값이 변경될 때 마다 a+b의 결과가 바뀌도록 구현하는게 상대적으로 복잡하다.
+// RxSwift에서는 값에 따라 새로운 결과를 도출하는 코드를 상대적으로 쉽게 구현할 수 있다. => Reactive Programming(반응형 프로그래밍)
+
+
+// # RxSwift
+
+let disposeBag = DisposeBag()
 
 let a = BehaviorSubject(value: 1)
 let b = BehaviorSubject(value: 2)
 
 Observable.combineLatest(a, b) { $0 + $1 }
-.subscribe(onNext: { print($0)} )
+.subscribe(onNext: { print($0)} ) // 3
 .disposed(by: disposeBag)
 
-a.onNext(12)
-
+a.onNext(12) // 14
+// 이전의 a+b의 값이 변경되어 출력
