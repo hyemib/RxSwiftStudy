@@ -27,7 +27,15 @@ import RxSwift
 /*:
  # empty
  */
+// next 이벤트를 전달하지 않음. 어떠한 요소도 발출하지 않음
+// observer가 아무런 동작없이 종료해야될 때 활용
 
 let disposeBag = DisposeBag()
 
+Observable<Void>.empty() // 파라미터 x
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
+/*
+ completed
+ */

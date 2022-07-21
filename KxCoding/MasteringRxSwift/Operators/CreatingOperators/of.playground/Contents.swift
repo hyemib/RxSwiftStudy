@@ -27,16 +27,34 @@ import RxSwift
 /*:
  # of
  */
+// 두개 이상 요소를 방출하는 observable을 만들어야 한다면 of 연산자 사용
 
 let disposeBag = DisposeBag()
 let apple = "🍏"
 let orange = "🍊"
 let kiwi = "🥝"
 
+Observable.of(apple, orange, kiwi)
+    .subscribe{ element in print(element) }
+    .disposed(by: disposeBag)
 
+/*
+ next(🍏)
+ next(🍊)
+ next(🥝)
+ completed
+ */
 
+Observable.of([1, 2], [3, 4], [5, 6])
+    .subscribe{ element in print(element) }
+    .disposed(by: disposeBag)
 
-
+/*
+ next([1, 2])
+ next([3, 4])
+ next([5, 6])
+ completed
+ */
 
 
 

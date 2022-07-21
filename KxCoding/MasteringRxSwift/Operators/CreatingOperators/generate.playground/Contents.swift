@@ -27,14 +27,58 @@ import RxSwift
 /*:
  # generate
  */
-
+// 1씩 증가하는 range와 다르게 generate는 증가되는 크기를 바꾸거나 감소되게 할 수 있음
 let disposeBag = DisposeBag()
 let red = "🔴"
 let blue = "🔵"
 
+Observable.generate(initialState: 0, condition: { $0 <= 10 }, iterate: { $0 + 2 }) // (initialState: 시작 값, condition: true를 return 하는 경우에만 요소가 방출됨. false를 return하면 completed 이벤트를 전달하고 바로 종료, iterate: 값을 바꾸는 코드. 값을 증가 or 감소). generate 연산자는 range와 다르게 파라미터 형식이 정수로 제한되지 않음
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
+/*
+ next(0)
+ next(2)
+ next(4)
+ next(6)
+ next(8)
+ next(10)
+ completed
+ */
 
+Observable.generate(initialState: 10, condition: { $0 >= 0 }, iterate: { $0 - 2})
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
+/*
+ next(10)
+ next(8)
+ next(6)
+ next(4)
+ next(2)
+ next(0)
+ completed
+ */
 
+Observable.generate(initialState: red, condition: { $0.count <= 15 }, iterate: { $0.count.isMultiple(of: 2) ? $0 + red : $0 + blue})
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
-
+/*
+ next(🔴)
+ next(🔴🔵)
+ next(🔴🔵🔴)
+ next(🔴🔵🔴🔵)
+ next(🔴🔵🔴🔵🔴)
+ next(🔴🔵🔴🔵🔴🔵)
+ next(🔴🔵🔴🔵🔴🔵🔴)
+ next(🔴🔵🔴🔵🔴🔵🔴🔵)
+ next(🔴🔵🔴🔵🔴🔵🔴🔵🔴)
+ next(🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵)
+ next(🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴)
+ next(🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵)
+ next(🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴)
+ next(🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵)
+ next(🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴🔵🔴)
+ completed
+ */

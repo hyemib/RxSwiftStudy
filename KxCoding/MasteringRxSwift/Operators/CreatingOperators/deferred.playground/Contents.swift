@@ -27,20 +27,51 @@ import RxSwift
 /*:
  # deferred
  */
+// deferred 연산자를 활용하면 특정 조건에 따라 observable 생성
 
 let disposeBag = DisposeBag()
 let animals = ["🐶", "🐱", "🐹", "🐰", "🦊", "🐻", "🐯"]
 let fruits = ["🍎", "🍐", "🍋", "🍇", "🍈", "🍓", "🍑"]
 var flag = true
 
+let factory: Observable<String> = Observable.deferred {
+    flag.toggle()
+    
+    if flag {
+        return Observable.from(animals) // 배열에 있는 요소들이 개별적으로 방출
+    } else {
+        return Observable.from(fruits)
+    }
+} // deferred 연산자는 observable을 리턴하는 클로저를 파라미터로 받음
+
+factory
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+/*
+ next(🍎)
+ next(🍐)
+ next(🍋)
+ next(🍇)
+ next(🍈)
+ next(🍓)
+ next(🍑)
+ completed
+ */
 
 
+factory
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
-
-
-
-
-
-
-
+/*
+ next(🐶)
+ next(🐱)
+ next(🐹)
+ next(🐰)
+ next(🦊)
+ next(🐻)
+ next(🐯)
+ completed
+ */
 

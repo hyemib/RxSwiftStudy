@@ -27,6 +27,8 @@ import RxSwift
 /*:
  # error
  */
+// next 이벤트를 전달하지 않음. 어떠한 요소도 발출하지 않음
+// error를 처리할 때 활용
 
 let disposeBag = DisposeBag()
 
@@ -34,9 +36,13 @@ enum MyError: Error {
    case error
 }
 
+Observable<Void>.error(MyError.error) // 파라미터로 error를 받음
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
-
-
+/*
+ error(error)
+ */
 
 
 

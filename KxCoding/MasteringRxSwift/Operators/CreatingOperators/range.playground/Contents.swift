@@ -27,10 +27,25 @@ import RxSwift
 /*:
  # range
  */
+// 정수를 지정된 수 만큼 방출
 
 let disposeBag = DisposeBag()
 
+Observable.range(start: 1, count: 10)// (start: 시작 수, count: 방출 할 정수의 수) 정수만 가능. start 값에서 1씩 증가
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
-
-
+/*
+ next(1)
+ next(2)
+ next(3)
+ next(4)
+ next(5)
+ next(6)
+ next(7)
+ next(8)
+ next(9)
+ next(10)
+ completed
+ */
 
