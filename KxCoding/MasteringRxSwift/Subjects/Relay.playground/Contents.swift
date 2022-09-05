@@ -95,10 +95,6 @@ rrelay.subscribe { print("3: \($0)") }
 
 // Relay로 전달한 마지막 값 3개가 구독자에게 전달됨
 /*
- 1: next(1)
- 2: next(2)
- 2: next(3)
- 3
  3: next(8)
  3: next(9)
  3: next(10)

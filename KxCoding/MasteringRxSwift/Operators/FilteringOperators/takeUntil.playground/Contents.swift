@@ -30,15 +30,58 @@ import RxSwift
 
 let disposeBag = DisposeBag()
 
+let subject = PublishSubject<Int>()
+let trigger = PublishSubject<Int>()
+
+// # subject.take(until: <#T##ObservableType#>)
+subject.take(until: trigger) // Observable을 파라미터로 받음. 파라미터로 전달한 Observable에서 next 이벤트를 전달하기 전까지 원본 Observable에서 next 이벤트를 전달.
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+subject.onNext(1)
+// trigger가 next 이벤트를 방출하지 않았기 때문에 원본 이벤트를 구독자에게 전달
+/*
+ next(1)
+ */
+subject.onNext(2)
+/*
+ next(1)
+ next(2)
+ */
+trigger.onNext(0)
+// trigger에서 next 이벤트를 방출하면 completed 이벤트를 전달하고 종료
+/*
+ next(1)
+ next(2)
+ completed
+ */
+subject.onNext(3) // 새로운 이벤트를 방출해도 실행은 되지만 더이상 이벤트를 방출하지 않음
 
 
 
+// # subject.take(until: <#T##(Int) throws -> Bool#>, behavior: <#T##TakeBehavior#>)
+// 클로저에서 false를 리턴하는 동안 이벤트를 방출하고 true를 리턴하면 이벤트 방출을 중단하고 Observable을 종료
+subject.take(until: { $0 > 5 }) // Observable이 방출하는 요소를 받아서 Bool을 리턴하는 클로저. false를 리턴하는 동안 이벤트를 방출하고 true를 리턴하면 이벤트 방출을 준단하고 Observable을 종료
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
-
-
-
-
-
+subject.onNext(1)
+subject.onNext(2)
+subject.onNext(3)
+// 5보다 작은 값이므로 모두 방출됨
+/*
+ next(1)
+ next(2)
+ next(3)
+ */
+// 5를 초과하는 값을 방출하면 true를 리턴하고 구독자로 전달되지 않음. completed 이벤트가 전달되고 종료됨
+subject.onNext(6)
+/*
+ next(1)
+ next(2)
+ next(3)
+ completed
+ */
 
 
 

@@ -27,7 +27,9 @@ import RxSwift
 /*:
  # debounce
  */
-
+// 짧은 시간동안 반복적으로 방출되는 이벤트를 제어
+// debounce(_ dueTime: RxTimeInterval, scheduler: SchedulerType)
+// dueTime 파라미터에는 시간을 전달. 이 시간은 연산자가 next 이벤트를 방출할지 결정하는 조건으로 사용됨. Observer가 next 이벤트를 방출한 다음 지정된 시간동안 다른 next 이벤트를 방출하지 않는다면 해당 시점에 가장 마지막으로 방출된 next 이벤트를 구독자에게 전달. 지정된 시간 이내에 또다른 next 이벤트를 방출했다면 타이머를 초기화. 타이머를 초기화 후 다시 지정된 시간동안 대기. 이 시간 이내에 다른 이벤트가 방출되지 않는다면 마지막 이벤트를 방출하고 이벤트가 방출된다면 타이머를 다시 초기화
 
 let disposeBag = DisposeBag()
 
@@ -52,8 +54,45 @@ let buttonTap = Observable<String>.create { observer in
       
    }
 }
-
+/*
 buttonTap
    .subscribe { print($0) }
    .disposed(by: disposeBag)
 
+// 0.3초마다 next 이벤트가 방출되고 1초 쉬었다가 0.5초 마다 next 이벤트가 방출됨
+/*
+ next(Tap 1)
+ next(Tap 2)
+ next(Tap 3)
+ next(Tap 4)
+ next(Tap 5)
+ next(Tap 6)
+ next(Tap 7)
+ next(Tap 8)
+ next(Tap 9)
+ next(Tap 10)
+ next(Tap 11)
+ next(Tap 12)
+ next(Tap 13)
+ next(Tap 14)
+ next(Tap 15)
+ next(Tap 16)
+ next(Tap 17)
+ next(Tap 18)
+ next(Tap 19)
+ next(Tap 20)
+ completed
+ */
+*/
+
+buttonTap
+    .debounce(.milliseconds(1000), scheduler: MainScheduler.instance)
+   .subscribe { print($0) }
+   .disposed(by: disposeBag)
+
+// 지정된 시간동안 새로운 이벤트가 방출되지 않으면 가장 마지막으로 방출된 이벤트를 구독자에게 전달
+/*
+ next(Tap 10)
+ next(Tap 20)
+ completed
+ */

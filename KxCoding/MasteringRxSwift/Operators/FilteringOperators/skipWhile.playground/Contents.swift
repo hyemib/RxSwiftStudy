@@ -31,7 +31,22 @@ import RxSwift
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
+Observable.from(numbers)
+    .skip{!$0.isMultiple(of: 2) } // 클로저를 파라미터로 받음. 클로저에서 true를 리턴하면 앞에서 방출하는 next 이벤트를 무시. 클로저에서 false를 리턴하면 그때부터 next 이벤트를 방출
+    .subscribe{ print($0) }
+    .disposed(by: disposeBag)
 
+/*
+ next(2)
+ next(3)
+ next(4)
+ next(5)
+ next(6)
+ next(7)
+ next(8)
+ next(9)
+ next(10)
+ completed
+ */
 
-
-
+// filter 연산자와 다르게 클로저가 한번이라도 false를 리턴하면 더이상 조건을 판단하지 않음

@@ -23,6 +23,7 @@
 
 import UIKit
 import RxSwift
+import Darwin
 
 /*:
  # takeLast
@@ -30,8 +31,26 @@ import RxSwift
 
 let disposeBag = DisposeBag()
 
+let subject = PublishSubject<Int>()
 
+subject.takeLast(2) // 정수를 파라미터로 받아서 Observable을 리턴. 리턴되는 Observable은 원본 Observable이 방출하는 next 이벤트 중에서 마지막에 방출한 next 이벤트만 지정한 수만큼 방출
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
+(1...10).forEach { subject.onNext($0) } // 마지막에 방출한 9와10을 버퍼에 저장한 상태
 
+subject.onNext(11) // 버퍼에 저장된 값을 10과 11로 업데이트
 
+subject.onCompleted()
 
+/*
+ next(10)
+ next(11)
+ completed
+ */
+/*
+enum MyError: Error {
+    case error
+}
+subject.onError(MyError.error) // 에러 이벤트를 전달하면 버퍼에 저장된 이벤트는 버리고 에러 이벤트만 전달
+*/

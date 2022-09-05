@@ -32,8 +32,30 @@ import RxSwift
 let disposeBag = DisposeBag()
 
 let o = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
-
+/*
 o.subscribe { print($0) }
     .disposed(by: disposeBag)
 
+// 1초마다 1씩 증가하는 정수를 방출
+/*
+ next(0)
+ next(1)
+ next(2)
+ next(3)
+ next(4)
+ next(5)
+ next(6)
+ next(7)
+ */
+*/
 
+o.take(for: .seconds(3), scheduler: MainScheduler.instance) // Observable이 이벤트 방출을 시작하면 지정 시간만큼 이벤트를 전달하고 시간이 견과하면 더이상 이벤트를 전달하지 않고 끝남
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// 시간상의 오차로 1까지 전달하고 끝남
+/*
+ next(0)
+ next(1)
+ completed
+ */

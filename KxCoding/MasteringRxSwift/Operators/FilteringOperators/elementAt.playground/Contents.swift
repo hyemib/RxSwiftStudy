@@ -27,7 +27,17 @@ import RxSwift
 /*:
  # elementAt
  */
+// 특정 인덱스에 위치한 요소를 제한적으로 방출
 
 let disposeBag = DisposeBag()
 let fruits = ["🍏", "🍎", "🍋", "🍓", "🍇"]
 
+Observable.from(fruits)
+    .element(at: 1) // 정수 인덱스를 파라미터로 받아서 observable을 리턴
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+/*
+ next(🍎)
+ completed
+ */

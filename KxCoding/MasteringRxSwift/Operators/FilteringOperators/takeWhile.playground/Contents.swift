@@ -31,7 +31,27 @@ import RxSwift
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
+Observable.from(numbers)
+    .take(while: {!$0.isMultiple(of: 2) }) // while 파라미터는 true를 리턴하면 next 이벤트를 방출. behavior 파라미터는 마지막에 확인한 값을 방출할지 말지를 결정. 기본 값은 .exclusive로 선언되어 있음. 마지막에 확인한 값이 true이면 방출하지만 나머지 경우에는 무시. 이 값을 inclusive로 바꾸면 마지막에 확인한 값이 조건을 충족시키지 않더라도 방출
+    .subscribe{ print($0) }
+    .disposed(by: disposeBag)
+
+// 2는 false를 리턴하므로 전달하지 않고 completed 이벤트를 전달한 다음 끝남
+/*
+ next(1)
+ completed
+ */
 
 
 
+Observable.from(numbers)
+    .take(while: {!$0.isMultiple(of: 2) }, behavior: .inclusive)
+    .subscribe{ print($0) }
+    .disposed(by: disposeBag)
 
+// 2도 함께 방출. 조건에서 false이지만 behavior 파라미터로 inclusive를 전달하면 마지막에 확인한 값도 함께 방출함. 
+/*
+ next(1)
+ next(2)
+ completed
+ */

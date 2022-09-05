@@ -27,9 +27,31 @@ import RxSwift
 /*:
  # ignoreElements
  */
+// Observarble이 방출하는 next 이벤트는 필터링하고 completed & error 이벤트만 구독자에게 전달
 
 let disposeBag = DisposeBag()
 let fruits = ["🍏", "🍎", "🍋", "🍓", "🍇"]
 
 
+Observable.from(fruits)
+    .subscribe{ print($0) }
+    .disposed(by: disposeBag)
 
+// 방출되는 요소를 필터링하지 않은 상태
+/*
+ next(🍏)
+ next(🍎)
+ next(🍋)
+ next(🍓)
+ next(🍇)
+ completed
+ */
+
+Observable.from(fruits)
+    .ignoreElements() // 파라미터를 받지 않음
+    .subscribe{ print($0) }
+    .disposed(by: disposeBag)
+
+/*
+ completed
+ */

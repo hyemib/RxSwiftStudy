@@ -28,10 +28,59 @@ import RxSwift
  # single
  */
 
+// 원본 Observable에서 첫번째 요소만 방출하거나 조건과 일치하는 첫번째 요소만 방출
+// 두개 이상의 요소가 방출되는 경우에는 에러 발생
+
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
+Observable.just(1)
+    .single()
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+/*
+ next(1)
+ completed
+ */
+
+
+// # 파라미터가 없는 single 연산자
+Observable.from(numbers)
+    .single()
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+/*
+ next(1)
+ error(Sequence contains more than one element.)
+ */
+
+
+// # predicate를 받는 single 연산자
+Observable.from(numbers)
+    .single { $0 == 3 }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+/*
+ next(3)
+ completed
+ */
 
 
 
+let subject = PublishSubject<Int>()
 
+subject.single()
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+subject.onNext(100)
+
+// 새로운 요소를 방출하면 구독자에게 바로 전달됨
+// 하나의 요소가 방출되었다고 바로 completed 이벤트가 전달되먄 안됨. 다른 요소가 방출될 수도 있기 때문
+// 그래서 single 연산자가 리턴하는 Observable은 원본 Observable에서 completed 이벤트를 전달할 때까지 대기. completed 이벤트가 전달된 시점에 하나의 요소만 방출된 상태라면 구독자에게 completed 이벤트가 전달되고 그사이에 다른 요소가 방출되었으면 구독자에게 error가 전달됨
+/*
+ next(100)
+ */

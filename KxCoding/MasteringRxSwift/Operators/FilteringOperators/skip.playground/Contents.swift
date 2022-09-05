@@ -27,9 +27,25 @@ import RxSwift
 /*:
  # skip
  */
+// 정수를 파라미터로 받음
+// Observable이 방출하는 next 이벤트는 지정한 수 만큼 무시하고 이후에 방출하는 이벤트만 구독자로 전달
 
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
+Observable.from(numbers)
+    .skip(3) // 인덱스가 아닌 카운트
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
+/*
+ next(4)
+ next(5)
+ next(6)
+ next(7)
+ next(8)
+ next(9)
+ next(10)
+ completed
+ */
 
