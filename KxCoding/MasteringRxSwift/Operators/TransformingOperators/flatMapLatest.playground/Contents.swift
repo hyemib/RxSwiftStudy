@@ -27,6 +27,10 @@ import RxSwift
 /*:
  # flatMapLatest
  */
+// flatMapLatest는 원본 Observable이 방출하는 이벤트를 Inner Oberservable로 변환한다는 점에서는 flatMap과 동일
+// 하지만 모든 Inner Observable이 방출하는 이벤트를 하나로 병합하지는 않음
+// 원본 Observable이 이벤트를 방출하고 새로운 Inner Observable이 생성되면 기존에 있던 Inner Observable은 이벤트 방출을 중단하고 종료됨. 이 때부터 새로운 Inner Observable이 이벤트 방출을 시작하고 Result Observable은 이 Observable이 방출하는 이벤트를 구독자로 전달.
+
 
 let disposeBag = DisposeBag()
 
@@ -42,7 +46,7 @@ let sourceObservable = PublishSubject<String>()
 let trigger = PublishSubject<Void>()
 
 sourceObservable
-    .flatMap { circle -> Observable<String> in
+    .flatMapLatest { circle -> Observable<String> in
         switch circle {
         case redCircle:
             return Observable<Int>.interval(.milliseconds(200), scheduler: MainScheduler.instance)
@@ -76,3 +80,55 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
     trigger.onNext(())
 }
+
+// 가장 최근에 생성된 Inner Observable을 의미함. 새로운 Inner Observable이 생성되면 기존 Observable은 바로 종료됨.
+/*
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ next(💚)
+ next(💚)
+ next(💚)
+ next(💚)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ */

@@ -27,6 +27,7 @@ import RxSwift
 /*:
  # concatMap
  */
+// concatMap은 Interleaving없이 항상 방출 순서를 보장
 
 let disposeBag = DisposeBag()
 
@@ -39,7 +40,7 @@ let greenHeart = "💚"
 let blueHeart = "💙"
 
 Observable.from([redCircle, greenCircle, blueCircle])
-    .flatMap { circle -> Observable<String> in
+    .concatMap { circle -> Observable<String> in
         switch circle {
         case redCircle:
             return Observable.repeatElement(redHeart)
@@ -57,7 +58,25 @@ Observable.from([redCircle, greenCircle, blueCircle])
     .subscribe { print($0) }
     .disposed(by: disposeBag)
 
-
+// 원본 Observable이 방출하는 이벤트의 순서와 Inner Observable이 이벤트를 방출하는 순서가 동일. 한번에 하나의 Inner Observable만 이벤트를 방출하기 때문에 Interleaving이 발생하지 않음.
+/*
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ next(💚)
+ next(💚)
+ next(💚)
+ next(💚)
+ next(💚)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ next(💙)
+ completed
+ */
 
 
 

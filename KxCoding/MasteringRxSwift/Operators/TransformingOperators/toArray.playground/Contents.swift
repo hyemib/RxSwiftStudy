@@ -27,7 +27,20 @@ import RxSwift
 /*:
  # toArray
  */
+// Observable이 방출하는 모든 요소를 배열에 담은 다음 이 배열을 방출하는 Observable을 생성
 
 let disposeBag = DisposeBag()
 
+let subject = PublishSubject<Int>()
 
+subject
+    .toArray() // 하나의 요소를 방출한 다음 바로 종료
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+subject.onNext(1)
+subject.onNext(2)
+subject.onCompleted()
+/*
+ success([1, 2])
+ */

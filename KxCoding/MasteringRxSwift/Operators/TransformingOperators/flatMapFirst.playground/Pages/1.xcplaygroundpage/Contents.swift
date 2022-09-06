@@ -27,6 +27,7 @@ import RxSwift
 /*:
  # flatMapFirst #1
  */
+// 리턴하는 Result Observable은 Inner Observable 중에서 가장 먼저 이벤트를 방출하는 Observable의 이벤트만 전달하고 나머지 Inner Observable은 무시
 
 let disposeBag = DisposeBag()
 
@@ -39,7 +40,7 @@ let greenHeart = "💚"
 let blueHeart = "💙"
 
 Observable.from([redCircle, greenCircle, blueCircle])
-    .flatMap { circle -> Observable<String> in
+    .flatMapFirst { circle -> Observable<String> in
         switch circle {
         case redCircle:
             return Observable.repeatElement(redHeart)
@@ -57,7 +58,14 @@ Observable.from([redCircle, greenCircle, blueCircle])
     .subscribe { print($0) }
     .disposed(by: disposeBag)
 
-
+/*
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ next(❤️)
+ completed
+ */
 
 //: [Next](@next)
 

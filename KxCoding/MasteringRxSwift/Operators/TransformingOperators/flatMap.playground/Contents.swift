@@ -27,6 +27,8 @@ import RxSwift
 /*:
  # flatMap
  */
+// 원본 Obsevable이 next 이벤트를 방출하면 FlatMap 연산자가 변환 함수를 실행. 변환 함수는 next 이벤트에 포함된 값을 원하는 형태로 바꾸거나 원하는 작업을 실행. 결과를 새로운 Obsevable을 통해 방출 => Inner Observable이라고 함. 내부적으로 유지되는 Observable. 외부에서는 존재를 알필요x.
+// 최종적으로 구독자에게 이벤트를 전달할 때는 모든 Observable을 하나로 합친 새로운 Observable을 사용. 이 과정을 Flattening(평탄화)라고 하고 이 Observable을 Result Observable이라 함.
 
 let disposeBag = DisposeBag()
 
@@ -38,3 +40,41 @@ let redHeart = "❤️"
 let greenHeart = "💚"
 let blueHeart = "💙"
 
+Observable.from([redCircle, greenCircle, blueCircle])
+    .flatMap { circle -> Observable<String> in
+        switch circle {
+        case redCircle:
+            return Observable.repeatElement(redHeart)
+                .take(5)
+        case greenCircle:
+            return Observable.repeatElement(greenHeart)
+                .take(5)
+        case blueCircle:
+            return Observable.repeatElement(blueHeart)
+                .take(5)
+        default:
+            return Observable.just("")
+        }
+    }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// 뒤죽박죽 순서로 출력. FlatMap은 Inner Observable이 이벤트를 방출하면 Result Observable을 통해 지연 없이 방출 => => Interleaving
+/*
+ next(❤️)
+ next(❤️)
+ next(💚)
+ next(❤️)
+ next(💚)
+ next(💙)
+ next(❤️)
+ next(💚)
+ next(💙)
+ next(❤️)
+ next(💚)
+ next(💙)
+ next(💚)
+ next(💙)
+ next(💙)
+ completed
+ */

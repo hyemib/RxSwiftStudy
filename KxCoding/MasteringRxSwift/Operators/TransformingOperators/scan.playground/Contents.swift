@@ -27,10 +27,26 @@ import RxSwift
 /*:
  # scan
  */
+// 기본 값으로 연산을 시작
+// 원본 Observable이 방출하는 항목을 대상으로 변환을 실행한 다음 결과를 방출하는 하나의 Observable을 리턴. 원본이 방출하는 항목의 수와 구독자로 전달되는 항목의 수가 동일.
 
 let disposeBag = DisposeBag()
 
+Observable.range(start: 1, count: 10)
+    .scan(0, accumulator: +)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
-
-
-
+/*
+next(1)
+next(3)
+next(6)
+next(10)
+next(15)
+next(21)
+next(28)
+next(36)
+next(45)
+next(55)
+completed
+*/
