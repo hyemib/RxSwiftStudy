@@ -28,6 +28,9 @@ import RxSwift
  # combineLatest
  */
 
+// Source Observables를 결합한 후 파라미터로 전달한 함수를 실행하고 결과를 방출하는 새로운 Observable을 리턴
+// 연산자가 리턴하는 Observable(result Observable)이 언제 이벤트를 방출하는지 이해하는 것이 중요
+
 let bag = DisposeBag()
 
 enum MyError: Error {
@@ -37,9 +40,45 @@ enum MyError: Error {
 let greetings = PublishSubject<String>()
 let languages = PublishSubject<String>()
 
+Observable.combineLatest(greetings, languages) { lhs, rhs -> String in
+    return "\(lhs) \(rhs)"
+}
+    .subscribe{ print($0) }
+    .disposed(by: bag)
+
+greetings.onNext("Hi")
+languages.onNext("World!")
+
+greetings.onNext("Hello")
+languages.onNext("RxSwift")
+
+greetings.onCompleted()
+languages.onNext("SwiftUI")
+
+languages.onCompleted()
+
+/*
+ next(Hi World!)
+ next(Hello World!)
+ next(Hello RxSwift)
+ next(Hello SwiftUI)
+ completed
+ */
 
 
 
+/*
+ greetings.onError(MyError.error)
+ languages.onNext("SwiftUI")
 
+ languages.onCompleted()
 
+ /*
+  next(Hi World!)
+  next(Hello World!)
+  next(Hello RxSwift)
+  error(error)
+  */
+ 
+ */
 

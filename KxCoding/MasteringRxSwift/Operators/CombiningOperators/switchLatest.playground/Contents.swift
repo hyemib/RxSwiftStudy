@@ -27,6 +27,7 @@ import RxSwift
 /*:
  # switchLatest
  */
+// 가장 최근 Observable이 방출하는 이벤트를 구독자에게 전달
 
 let bag = DisposeBag()
 
@@ -37,8 +38,74 @@ enum MyError: Error {
 let a = PublishSubject<String>()
 let b = PublishSubject<String>()
 
+let source = PublishSubject<Observable<String>>()
+
+source
+    .switchLatest() // 파라미터x. Observable을 방출하는 Observable에서 사용
+    .subscribe { print($0) }
+    .disposed(by: bag)
+
+a.onNext("1")
+b.onNext("b")
+
+source.onNext(a) // source에서 방출한 Observable이 없기 때문에 구독자로 전달되는 것도 없음
+
+a.onNext("2")
+
+/*
+ next(2)
+ */
+
+b.onNext("b")
+
+// b subject는 최신 Observable이 아니기 때문에 구독자에게 전달x
+/*
+ next(2)
+ */
+
+source.onNext(b) // b를 구독하기 시작
+
+a.onNext("3")
+b.onNext("c")
+
+/*
+ next(2)
+ next(c)
+ */
+
+a.onCompleted()
+
+// 구독자로 전달x
+/*
+ next(2)
+ next(c)
+ */
+
+b.onCompleted()
+
+/*
+ next(2)
+ next(c)
+ */
+
+source.onCompleted()
+
+/*
+ next(2)
+ next(c)
+ completed
+
+ */
 
 
-
-
-
+// 에러 이벤트
+/*
+ a.onError(MyError.error) // 구독자에게 전달x
+ b.onError(MyError.error) // 최신 Observable인 b는 에러 이벤트를 받으면 즉시 구독자에게 전달
+ 
+ /*
+  next(2)
+  next(c)
+  error(error)
+  */
+ */

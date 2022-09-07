@@ -27,6 +27,9 @@ import RxSwift
 /*:
  # withLatestFrom
  */
+// triggerObservable.withLatestFrom(dataObservable)
+// 연산자를 호출하는 Observable을 trigger Observable이라 하고 파라미터로 전달하는 Observable을 data Observable이라 함
+// triggerObservable이 next 이벤트를 방출하면 dataObservable이 가장 최근에 방출한 next 이벤트를 구독자에게 전달
 
 let bag = DisposeBag()
 
@@ -37,10 +40,46 @@ enum MyError: Error {
 let trigger = PublishSubject<Void>()
 let data = PublishSubject<String>()
 
+trigger.withLatestFrom(data)
+    .subscribe { print($0)}
+    .disposed(by: bag)
+
+data.onNext("Hello")
+trigger.onNext(())
+trigger.onNext(())
+
+// # 1
+data.onCompleted()
+trigger.onNext(())
+
+/*
+ next(Hello)
+ next(Hello)
+ next(Hello)
+ */
+
+// # 2
+/*
+ trigger.onNext(())
+ trigger.onColeted()
+ 
+ /*
+  next(Hello)
+  next(Hello)
+  completed
+  */
+ */
 
 
-
-
-
-
+// # 3
+/*
+ data.onError(MyError.error)
+ trigger.onNext(())
+ 
+ /*
+  next(Hello)
+  next(Hello)
+  error(error)
+  */
+ */
 

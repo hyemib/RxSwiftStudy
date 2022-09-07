@@ -27,16 +27,54 @@ import RxSwift
 /*:
  # concat
  */
+// 두 개의 Observable을 연결
 
 let bag = DisposeBag()
 let fruits = Observable.from(["🍏", "🍎", "🥝", "🍑", "🍋", "🍉"])
 let animals = Observable.from(["🐶", "🐱", "🐹", "🐼", "🐯", "🐵"])
 
+// # type 메소드 사용
+Observable.concat([fruits, animals])
+    .subscribe { print($0) }
+    .disposed(by: bag)
+
+/*
+ next(🍏)
+ next(🍎)
+ next(🥝)
+ next(🍑)
+ next(🍋)
+ next(🍉)
+ next(🐶)
+ next(🐱)
+ next(🐹)
+ next(🐼)
+ next(🐯)
+ next(🐵)
+ completed
+ */
 
 
+// # 인스턴스 메소드 사용
+fruits.concat(animals)
+    .subscribe { print($0) }
+    .disposed(by: bag)
 
-
-
+/*
+ next(🍏)
+ next(🍎)
+ next(🥝)
+ next(🍑)
+ next(🍋)
+ next(🍉)
+ next(🐶)
+ next(🐱)
+ next(🐹)
+ next(🐼)
+ next(🐯)
+ next(🐵)
+ completed
+ */
 
 
 
