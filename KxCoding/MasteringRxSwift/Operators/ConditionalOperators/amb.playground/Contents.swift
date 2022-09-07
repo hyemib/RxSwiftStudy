@@ -27,7 +27,7 @@ import RxSwift
 /*:
  # amb
  */
-
+// 두개 이상의 Source Observables 중에서 가장 먼저 next 이벤트를 전달한 Observable을 구독하고 나머지는 무시.
 
 let bag = DisposeBag()
 
@@ -39,10 +39,29 @@ let a = PublishSubject<String>()
 let b = PublishSubject<String>()
 let c = PublishSubject<String>()
 
+a.amb(b)
+    .subscribe { print($0) }
+    .disposed(by: bag)
 
+a.onNext("A")
+b.onNext("B")
 
+// 가장 먼저 전달한 a subject만 구독하고 b subject는 무시
+/*
+ next(A)
+ */
 
+b.onCompleted()
 
+// b subject의 completed나 error 이벤트도 전달되지 않음
+/*
+ next(A)
+ */
 
+a.onCompleted()
 
-
+// a subject가 전달하는 이벤트는 바로 구독자에게 전달됨
+/*
+ next(A)
+ completed
+ */
