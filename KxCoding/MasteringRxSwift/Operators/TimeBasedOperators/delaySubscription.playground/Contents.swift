@@ -36,8 +36,38 @@ func currentTimeString() -> String {
    return f.string(from: Date())
 }
 
+Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+    .take(10)
+    .debug()
+    .delaySubscription(.seconds(7), scheduler: MainScheduler.instance) // delay 시간 지연
+    .subscribe { print(currentTimeString(), $0) }
+    .disposed(by: bag)
 
-
-
+/*
+ 2022-09-10 16:16:55.820: delaySubscription.playground:41 (__lldb_expr_9) -> subscribed
+ 2022-09-10 16:16:56.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(0)
+ 2022-09-10 16:16:56.825 next(0)
+ 2022-09-10 16:16:57.825: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(1)
+ 2022-09-10 16:16:57.826 next(1)
+ 2022-09-10 16:16:58.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(2)
+ 2022-09-10 16:16:58.824 next(2)
+ 2022-09-10 16:16:59.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(3)
+ 2022-09-10 16:16:59.824 next(3)
+ 2022-09-10 16:17:00.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(4)
+ 2022-09-10 16:17:00.824 next(4)
+ 2022-09-10 16:17:01.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(5)
+ 2022-09-10 16:17:01.825 next(5)
+ 2022-09-10 16:17:02.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(6)
+ 2022-09-10 16:17:02.825 next(6)
+ 2022-09-10 16:17:03.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(7)
+ 2022-09-10 16:17:03.824 next(7)
+ 2022-09-10 16:17:04.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(8)
+ 2022-09-10 16:17:04.824 next(8)
+ 2022-09-10 16:17:05.824: delaySubscription.playground:41 (__lldb_expr_9) -> Event next(9)
+ 2022-09-10 16:17:05.825 next(9)
+ 2022-09-10 16:17:05.826: delaySubscription.playground:41 (__lldb_expr_9) -> Event completed
+ 2022-09-10 16:17:05.826 completed
+ 2022-09-10 16:17:05.827: delaySubscription.playground:41 (__lldb_expr_9) -> isDisposed
+ */
 
 
