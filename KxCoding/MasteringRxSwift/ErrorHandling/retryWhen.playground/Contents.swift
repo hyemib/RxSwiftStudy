@@ -28,6 +28,7 @@ import RxSwift
  # retry(when:)
  */
 
+// 재시도 시점 구현
 
 let bag = DisposeBag()
 
@@ -58,9 +59,39 @@ let source = Observable<Int>.create { observer in
 let trigger = PublishSubject<Void>()
 
 source
+    .retry { _ in trigger } // retry와 다르게 바로 재시도하지 않고 trigger Observable이 next 이벤트를 방출하기 전까지 대기
     .subscribe { print($0) }
     .disposed(by: bag)
 
+/*
+ START #1
+ END #1
+ */
+
+trigger.onNext(()) // trigger subject로 next 이벤트를 전달하면 Source Observable에서 새로운 구독을 시작.
+
+// Source observable에서 에러 이벤트를 방출하기 때문에 다시 대기.
+/*
+START #1
+END #1
+START #2
+END #2
+*/
+
+trigger.onNext(())
+
+// 에러 발생x
+/*
+ START #1
+ END #1
+ START #2
+ END #2
+ START #3
+ next(1)
+ next(2)
+ completed
+ END #3
+ */
 
 
 

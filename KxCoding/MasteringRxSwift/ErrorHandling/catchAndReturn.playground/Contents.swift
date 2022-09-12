@@ -28,6 +28,8 @@ import RxSwift
  # catchAndReturn
  */
 
+// 기본값을 리턴하는 연산자
+
 let bag = DisposeBag()
 
 enum MyError: Error {
@@ -37,7 +39,13 @@ enum MyError: Error {
 let subject = PublishSubject<Int>()
 
 subject
+    .catchAndReturn(-1) // Source Observable에서 에러가 발생하면 파라미터로 전달한 기본값을 방출
     .subscribe { print($0) }
     .disposed(by: bag)
 
 subject.onError(MyError.error)
+
+/*
+ next(-1)
+ completed
+ */
