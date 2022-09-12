@@ -27,9 +27,10 @@ import RxSwift
 /*:
  # Sharing Subscriptions
  */
+// 불필요한 작업을 방지
 
 let bag = DisposeBag()
-
+/*
 let source = Observable<String>.create { observer in
     let url = URL(string: "https://kxcoding-study.azurewebsites.net/api/string")!
     let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
@@ -51,11 +52,50 @@ let source = Observable<String>.create { observer in
 source.subscribe().disposed(by: bag)
 source.subscribe().disposed(by: bag)
 source.subscribe().disposed(by: bag)
+*/
+
+/*
+ 2022-09-10 16:30:09.340: overveiw.playground:49 (__lldb_expr_11) -> subscribed
+ 2022-09-10 16:30:09.351: overveiw.playground:49 (__lldb_expr_11) -> subscribed
+ 2022-09-10 16:30:09.359: overveiw.playground:49 (__lldb_expr_11) -> subscribed
+ 2022-09-10 16:30:14.506: overveiw.playground:49 (__lldb_expr_11) -> Event next(Hello)
+ 2022-09-10 16:30:14.508: overveiw.playground:49 (__lldb_expr_11) -> Event completed
+ 2022-09-10 16:30:14.508: overveiw.playground:49 (__lldb_expr_11) -> isDisposed
+ 2022-09-10 16:30:14.509: overveiw.playground:49 (__lldb_expr_11) -> Event next(Hello)
+ 2022-09-10 16:30:14.509: overveiw.playground:49 (__lldb_expr_11) -> Event completed
+ 2022-09-10 16:30:14.510: overveiw.playground:49 (__lldb_expr_11) -> isDisposed
+ 2022-09-10 16:30:14.510: overveiw.playground:49 (__lldb_expr_11) -> Event next(Hello)
+ 2022-09-10 16:30:14.510: overveiw.playground:49 (__lldb_expr_11) -> Event completed
+ 2022-09-10 16:30:14.510: overveiw.playground:49 (__lldb_expr_11) -> isDisposed
+ */
 
 
+// 모든 구독자가 하나의 구독을 공유하도록 구현
+let source = Observable<String>.create { observer in
+    let url = URL(string: "https://kxcoding-study.azurewebsites.net/api/string")!
+    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+        if let data = data, let html = String(data: data, encoding: .utf8) {
+            observer.onNext(html)
+        }
+        
+        observer.onCompleted()
+    }
+    task.resume()
+    
+    return Disposables.create {
+        task.cancel()
+    }
+}
+.debug()
+.share()
 
+source.subscribe().disposed(by: bag)
+source.subscribe().disposed(by: bag)
+source.subscribe().disposed(by: bag)
 
-
-
-
-
+/*
+ 2022-09-10 16:32:48.717: overveiw.playground:89 (__lldb_expr_13) -> subscribed
+ 2022-09-10 16:32:48.777: overveiw.playground:89 (__lldb_expr_13) -> Event next(Hello)
+ 2022-09-10 16:32:48.777: overveiw.playground:89 (__lldb_expr_13) -> Event completed
+ 2022-09-10 16:32:48.778: overveiw.playground:89 (__lldb_expr_13) -> isDisposed
+ */

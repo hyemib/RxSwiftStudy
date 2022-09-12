@@ -27,10 +27,11 @@ import RxSwift
 /*:
  # publish
  */
+// multicast 연산자를 호출하고 새로운 publish subject를 만들어 파라미터로 전달. 그 후에 multicast가 리턴하는 connectable observable을 그대로 리턴
 
 let bag = DisposeBag()
-let subject = PublishSubject<Int>()
-let source = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance).take(5).multicast(subject)
+
+let source = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance).take(5).publish()
 
 source
     .subscribe { print("🔵", $0) }
@@ -43,6 +44,18 @@ source
 
 source.connect()
 
+/*
+ 🔵 next(0)
+ 🔵 next(1)
+ 🔵 next(2)
+ 🔴 next(2)
+ 🔵 next(3)
+ 🔴 next(3)
+ 🔵 next(4)
+ 🔴 next(4)
+ 🔵 completed
+ 🔴 completed
+ */
 
 
 
