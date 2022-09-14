@@ -37,6 +37,14 @@ class HelloRxCocoaViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        // RxCocoa에서 tap 이벤트를 처리할 때는 tap 속성을 사용
+        // tap 속성은 ControlEvent로 선언되어 있고 touchUpInside 이벤트가 발생하면 next 이벤트를 방출하는 특별한 Observable
+        tapButton.rx.tap
+            .map { "Hello, RxCocoa" } // 버튼을 tap할 때 마다 구독자에게 문자열을 전달
+            //.subscribe(onNext: { [weak self] str in
+            //    self?.valueLabel.text = str // text 속성에 접근해서 값을 변경
+            //})
+            .bind(to: valueLabel.rx.text) // 방출된 문자열을 label의 text 속성과 binding.  rx를 통해 text 속성에 접근. rx를 통해 접근하는 속성은 binder이고 일반속성과 타입이 다름. 
+            .disposed(by: bag)
     }
 }
