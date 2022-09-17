@@ -59,10 +59,34 @@ class CustomControlEventViewController: UIViewController {
             })
             .disposed(by: bag)
         
-        inputField.delegate = self
+        //inputField.delegate = self
+        inputField.rx.editingDidBegin
+            .map { UIColor.red }
+            .bind(to: inputField.rx.borderColor)
+            .disposed(by: bag)
+        
+        inputField.rx.editingDidEnd
+            .map { UIColor.gray }
+            .bind(to: inputField.rx.borderColor)
+            .disposed(by: bag)
     }
 }
 
+extension Reactive where Base: UITextField {
+    var borderColor: Binder<UIColor?> {
+        return Binder(self.base) { textField, color in
+            textField.layer.borderColor = color?.cgColor
+        }
+    }
+    var editingDidBegin: ControlEvent<Void> {
+        return controlEvent(.editingDidBegin)
+    }
+    var editingDidEnd: ControlEvent<Void> {
+        return controlEvent(.editingDidEnd)
+    }
+}
+
+/*
 extension CustomControlEventViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         textField.layer.borderColor = UIColor.red.cgColor
@@ -72,5 +96,6 @@ extension CustomControlEventViewController: UITextFieldDelegate {
         textField.layer.borderColor = UIColor.gray.cgColor
     }
 }
+*/
 
 

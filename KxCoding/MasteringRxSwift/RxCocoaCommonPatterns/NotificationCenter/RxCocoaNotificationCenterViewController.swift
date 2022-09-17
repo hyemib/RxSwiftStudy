@@ -46,24 +46,8 @@ class RxCocoaNotificationCenterViewController: UIViewController {
             })
             .disposed(by: bag)
         
-        let willShowObservable = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
-            .map{ ($0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as?
-                   NSValue)?.cgRectValue.height ?? 0 } // 하단 여백
-        let willHideObservable = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
-            .map{ noti -> CGFloat in 0 }
         
-        Observable.merge(willShowObservable, willHideObservable) // 구독자에게 높이 값이 전달
-            .map { [unowned self] height -> UIEdgeInsets in
-                var inset = self.textView.contentInset
-                inset.bottom = height
-                return inset
-            }
-            .subscribe(onNext: { [weak self] inset in
-                UIView.animate(withDuration: 0.3) {
-                    self?.textView.contentInset = inset
-                }
-            } )
-            .disposed(by: bag)
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {

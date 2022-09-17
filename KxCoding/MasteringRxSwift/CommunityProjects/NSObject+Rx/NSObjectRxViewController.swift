@@ -24,10 +24,11 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import NSObject_Rx
 
 class NSObjectRxViewController: UIViewController {
     
-    let bag = DisposeBag()
+    //let bag = DisposeBag()
     
     let button = UIButton(type: .system)
     let label = UILabel()
@@ -37,22 +38,27 @@ class NSObjectRxViewController: UIViewController {
         
         Observable.just("Hello")
             .subscribe { print($0) }
-            .disposed(by: bag)
+            .disposed(by: rx.disposeBag)
         
         button.rx.tap
             .map { "Hello" }
             .bind(to: label.rx.text)
-            .disposed(by: bag)
+            .disposed(by: rx.disposeBag)
     }
 }
 
-class MyClass {
-    let bag = DisposeBag()
+// NSObsect를 상속받지 않음. HasDisposeBag 프로토콜 채용
+// HasDisposeBag 프로토콜은 class 프로토콜로 선언되어 있기 때문에 구조체에서는 채용할 수 없음
+class MyClass: HasDisposeBag {
+    //let bag = DisposeBag()
     
     func doSomething() {
         Observable.just("Hello")
             .subscribe { print($0) }
-            .disposed(by: bag)
+            .disposed(by: disposeBag)
     }
 }
+
+// NSObject+Rx : DisposeBag 속성을 자동으로 추가해주는 라이브러리
+
 

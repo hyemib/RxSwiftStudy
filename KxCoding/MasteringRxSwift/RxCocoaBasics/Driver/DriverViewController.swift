@@ -41,25 +41,21 @@ class DriverViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let result = inputField.rx.text.asDriver()
-            .flatMapLatest {
-                validateText($0)
-                .asDriver(onErrorJustReturn: false)
-            }
-       
+        let result = inputField.rx.text
+            .flatMapLatest { validateText($0) }
         
         result
             .map { $0 ? "Ok" : "Error" }
-            .drive(resultLabel.rx.text)
+            .bind(to: resultLabel.rx.text)
             .disposed(by: bag)
         
         result
             .map { $0 ? UIColor.blue : UIColor.red }
-            .drive(resultLabel.rx.backgroundColor)
+            .bind(to: resultLabel.rx.backgroundColor)
             .disposed(by: bag)
         
         result
-            .drive(sendButton.rx.isEnabled)
+            .bind(to: sendButton.rx.isEnabled)
             .disposed(by: bag)
         
     }
@@ -85,9 +81,3 @@ func validateText(_ value: String?) -> Observable<Bool> {
         return Disposables.create()
     }
 }
-
-// Driver는 데이터를 UI에 바인딩하는 직관적이고 효율적인 방법을 제공
-// UI 처리에 특화됨. 에러 메세지 전달x. 오류로 인해 UI 처리가 중단되는 상황은 나타나지 않음
-// 스케줄러를 강제로 변경하는 경우를 제외하고 항상 메인스케줄러에서 작업 수행. 이벤트는 항상 메인 스케줄러에서 전달되고 이어지는 작업도 메인스케줄러에서 실행
-// Driver는 side effects를 공유. 일반 Observable에서 share(replay:1, scope: .whileConnected) 연산자와 동일하게 작동. 모든 구독자가 시퀀스를 공유하고 새로운 구독이 시작되면 가장 최근에 전달된 이벤트가 즉시 전달됨.
-

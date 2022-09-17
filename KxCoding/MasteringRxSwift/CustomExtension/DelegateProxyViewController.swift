@@ -39,7 +39,19 @@ class DelegateProxyViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        locationManager.requestAlwaysAuthorization()
+        locationManager.startUpdatingHeading()
         
+        locationManager.rx.didUpdateLocations
+            .subscribe(onNext: { locations in
+                print(locations)
+            })
+            .disposed(by: bag)
+        
+        locationManager.rx.didUpdateLocations
+            .map{ $0[0] }
+            .bind(to: mapView.rx.center)
+            .disposed(by: bag)
     }
 }
 
@@ -53,4 +65,35 @@ extension Reactive where Base: MKMapView {
     }
 }
 
+extension CLLocationManager: HasDelegate {
+    public typealias Delegate = CLLocationManagerDelegate
+}
+
+class RxCLLocationManagerDelegateProxy: DelegateProxy<CLLocationManager, CLLocationManagerDelegate>, DelegateProxyType, CLLocationManagerDelegate {
+    weak private(set) var locationManger: CLLocationManager?
+    
+    init(locationManger: CLLocationManager) {
+        self.locationManger = locationManger
+        super.init(parentObject: locationManger, delegateProxy: RxCLLocationManagerDelegateProxy.self)
+    }
+    
+    static func registerKnownImplementations() {
+        self.register {
+            RxCLLocationManagerDelegateProxy(locationManger: $0)
+        }
+    }
+}
+
+extension Reactive where Base: CLLocationManager {
+    var delegate: DelegateProxy<CLLocationManager, CLLocationManagerDelegate> {
+        return RxCLLocationManagerDelegateProxy.proxy(for: base)
+    }
+    
+    var didUpdateLocations: Observable<[CLLocation]> {
+        return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didUpdateLocations:)))
+            .map{ parameters in
+                return parameters[1] as! [CLLocation]
+            }
+    }
+}
 

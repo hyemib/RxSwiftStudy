@@ -37,7 +37,7 @@ class CustomBinderViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        /*
         colorPicker.rx.selectedSegmentIndex
             .map { index -> UIColor in
                 switch index {
@@ -71,5 +71,31 @@ class CustomBinderViewController: UIViewController {
             }
             .bind(to: valueLabel.rx.text)
             .disposed(by: bag)
+         */
+        
+        colorPicker.rx.selectedSegmentIndex
+            .bind(to: valueLabel.rx.segmentedValue)
+            .disposed(by: bag)
+    }
+}
+
+extension Reactive where Base: UILabel {
+    var segmentedValue: Binder<Int> {
+        return Binder(self.base) { label, index in
+            switch index {
+            case 0:
+                label.text = "Red"
+                label.textColor = UIColor.red
+            case 1:
+                label.text = "Green"
+                label.textColor = UIColor.green
+            case 2:
+                label.text = "Blue"
+                label.textColor = UIColor.blue
+            default:
+                label.text = "Unknown"
+                label.textColor = UIColor.black
+            }
+        }
     }
 }
