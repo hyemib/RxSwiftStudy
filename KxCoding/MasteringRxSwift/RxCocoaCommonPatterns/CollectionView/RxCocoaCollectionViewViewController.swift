@@ -24,21 +24,38 @@
 import UIKit
 import RxSwift
 import RxCocoa
-
 class RxCocoaCollectionViewViewController: UIViewController {
     
     let bag = DisposeBag()
-    
-    @IBOutlet weak var listCollectionView: UICollectionView!
-    
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        
-    }
-}
+
+     @IBOutlet weak var listCollectionView: UICollectionView!
+
+     let colorObservable = Observable.of(MaterialBlue.allColors)// Binding할 Observable 생성
+     // RxCocoa에서는 데이터소스와 델리게이트를 직접 연결x
+
+
+     override func viewDidLoad() {
+         super.viewDidLoad()
+
+         colorObservable.bind(to: listCollectionView.rx.items(cellIdentifier: "colorCell", cellType: ColorCollectionViewCell.self)) { index, color, cell in
+
+             cell.backgroundColor = color
+             cell.hexLabel.text = color.rgbHexString
+         }
+         .disposed(by: bag)
+
+         // 선택 이벤트를 처리할때 indexPath가 필요하면 itemSelected 속성을 사용하고 model data가 필요하면 modelSelected 속성을 사용.
+         // 셀을 선택하면 컬러값을 출력하는 것이 목적이기 때문에 modelSelected 속성 사용
+         listCollectionView.rx.modelSelected(UIColor.self)
+             .subscribe(onNext: {color in
+                 print(color.rgbHexString)
+             })
+             .disposed(by: bag)
+
+         listCollectionView.rx.setDelegate(self)
+             .disposed(by: bag)
+     }
+ }
 
 
 extension RxCocoaCollectionViewViewController: UICollectionViewDelegateFlowLayout {
